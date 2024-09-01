@@ -35,7 +35,7 @@ def simulate_real_time_csv():
     table_placeholder = st.empty()
 
     # Load the CSV file
-    df = pd.read_csv('C:\\Users\\amitm\\OneDrive\\Desktop\\SIH\\devsecc\\frontend\\pages\\dataset.csv')
+    df = pd.read_csv('dataset.csv')
 
     # Initialize simulation variables
     current_index = 0

@@ -1,16 +1,28 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from ui.main import Ui_MainWindow
 import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from ui.main_ui import Ui_MainWindow
+from login import LoginWindow
+from registration import RegistrationWindow
 
-class AgentApp(QMainWindow):
+class MainApp(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
-        # Connect signals and slots here if needed
+        self.setupUi(self)
+        # Initialize components here
 
-if __name__ == "__main__":
+    def show_login(self):
+        self.login_window = LoginWindow()
+        self.login_window.show()
+
+    def show_registration(self):
+        self.registration_window = RegistrationWindow()
+        self.registration_window.show()
+
+def main():
     app = QApplication(sys.argv)
-    window = AgentApp()
+    window = MainApp()
     window.show()
     sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    main()
