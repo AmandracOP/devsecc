@@ -1,0 +1,51 @@
+---
+- name: Setup and Test Infrastructure
+  hosts: localhost
+  tasks:
+
+    - name: Create Linux containers
+      docker_container:
+        name: "linux-container-{{ item }}"
+        image: ubuntu:latest
+        state: started
+        command: sleep infinity
+      with_sequence: count=10
+
+    - name: Create Windows containers
+      docker_container:
+        name: "windows-container-{{ item }}"
+        image: mcr.microsoft.com/windows/servercore:ltsc2019
+        state: started
+        command: sleep infinity
+      with_sequence: count=10
+
+    - name: Install software on Linux containers
+      docker_container_exec:
+        container: "linux-container-{{ item }}"
+        command: >
+          apt-get update &&
+          apt-get install -y wget curl &&
+          wget https://firefox-source-docs.mozilla.org/_static/building/build-prerequisites/debian_ubuntu/FIREFOX_TARBALL_HERE &&
+          tar xjf firefox-*.tar.bz2 &&
+          mv firefox /opt/firefox &&
+          ln -s /opt/firefox/firefox /usr/bin/firefox &&
+          /usr/bin/firefox http://localhost:8501
+      with_sequence: count=10
+
+    - name: Install software on Windows containers
+      win_shell: |
+        choco install firefox -y
+        Start-Process "firefox.exe" "http://localhost:8501"
+      with_sequence: count=10
+
+    - name: Test firewall policy on Linux containers
+      docker_container_exec:
+        container: "linux-container-{{ item }}"
+        command: curl http://localhost:5000/firewall/policy
+      register: result
+      with_sequence: count=10
+
+    - name: Print firewall policy test results
+      debug:
+        msg: "Linux Container {{ item }}: {{ result.stdout }}"
+      with_sequence: count=10
